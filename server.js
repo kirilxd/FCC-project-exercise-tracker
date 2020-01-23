@@ -75,6 +75,29 @@ app.post("/api/exercise/add", (req, res, next) => {
     res.send(message);
   }
 });
+app.get("/api/exercise/log:userId", (req, res, next) => {
+  let userId = req.query.userId;
+  let from = new Date(req.query.from);
+  let to = new Date(req.query.to);
+  let limit = req.query.limit;
+  User.findById(userId).then(user => {
+    if (from && to) {
+      let resultArray = user.log.filter(element => {
+        return element.date >= from && element.date <= to;
+      });
+      res.json({ exercises: resultArray });
+    }
+  });
+});
+app.post("/api/exercise/login", (req, res, next) => {
+  let inputUsername = req.body.username;
+  User.findOne({ username: inputUsername }, (error, data) => {
+    if (error) return next(error);
+    if (data) {
+      res.send(data);
+    }
+  });
+});
 
 // Not found middleware
 app.use((req, res, next) => {
